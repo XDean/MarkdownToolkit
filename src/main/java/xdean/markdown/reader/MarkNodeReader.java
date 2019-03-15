@@ -42,11 +42,15 @@ public class MarkNodeReader implements MarkConstants {
       node.setChildren(children);
       return node;
     } else {
-      return node;
+      if (path.getFileName().toString().endsWith(".md")) {
+        return node;
+      } else {
+        throw new IllegalArgumentException("The path is neither a folder nor a markdown file: " + path);
+      }
     }
   }
 
-  public String getTitle(Path path) throws IOException {
+  protected String getTitle(Path path) throws IOException {
     if (Files.isDirectory(path)) {
       Path readme = path.resolve(README_FILE);
       if (Files.exists(readme) && !Files.isDirectory(readme)) {

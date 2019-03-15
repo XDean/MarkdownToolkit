@@ -1,0 +1,40 @@
+{
+  "UID": "@0",
+  "parent": null,
+  "children": [
+    {
+      "parent": "@0",
+      "children": [],
+      "title": "md01.md",
+      "path": "src/test/resources/input/xdean/markdown/reader/MarkNodeReaderTest/testRead/multiple/md01.md"
+    },
+    {
+      "parent": "@0",
+      "children": [],
+      "title": "md02.md",
+      "path": "src/test/resources/input/xdean/markdown/reader/MarkNodeReaderTest/testRead/multiple/md02.md"
+    },
+    {
+      "UID": "@1",
+      "parent": "@0",
+      "children": [
+        {
+          "parent": "@1",
+          "children": [],
+          "title": "I'm md11.md",
+          "path": "src/test/resources/input/xdean/markdown/reader/MarkNodeReaderTest/testRead/multiple/sub/md11.md"
+        },
+        {
+          "parent": "@1",
+          "children": [],
+          "title": "md12.md",
+          "path": "src/test/resources/input/xdean/markdown/reader/MarkNodeReaderTest/testRead/multiple/sub/md12.md"
+        }
+      ],
+      "title": "I'm Sub",
+      "path": "src/test/resources/input/xdean/markdown/reader/MarkNodeReaderTest/testRead/multiple/sub"
+    }
+  ],
+  "title": "multiple",
+  "path": "src/test/resources/input/xdean/markdown/reader/MarkNodeReaderTest/testRead/multiple"
+}

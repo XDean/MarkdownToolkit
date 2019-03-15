@@ -7,6 +7,9 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
+
+import javax.annotation.CheckForNull;
 
 import org.junit.Assert;
 
@@ -16,18 +19,28 @@ import xdean.jex.util.reflect.ReflectUtil;
 public enum TestUtil {
   ;
 
+  private static final Path INPUT_PATH = Paths.get("src/test/resources/input");
   private static final Path GOLDEN_PATH = Paths.get("src/test/resources/golden");
 
-  public static void assertWithDefaultFile(String actual) throws IOException {
-    assertWithFile(actual, getDefaultPath(null));
+  public static Path getInputFile(String name) {
+    StackTraceElement caller = ReflectUtil.getCaller();
+    return INPUT_PATH.resolve(caller.getClassName().replace('.', '\\')).resolve(caller.getMethodName()).resolve(name);
   }
 
-  public static void assertWithDefaultFile(String actual, String suffix) throws IOException {
-    assertWithFile(actual, getDefaultPath(suffix));
+  public static void assertWithDefaultFile(String actual) throws IOException {
+    assertWithFile(actual, getDefaultGoldenPath(null, null));
+  }
+
+  public static void assertWithDefaultFile(String actual, String name) throws IOException {
+    assertWithFile(actual, getDefaultGoldenPath(name, null));
   }
 
   public static void assertWithDefultJson(Object actual) throws IOException {
-    assertWithFile(JsonPrinter.getDefault().toString(actual), getDefaultPath("json"));
+    assertWithDefultJson(actual, null);
+  }
+
+  public static void assertWithDefultJson(Object actual, String name) throws IOException {
+    assertWithFile(JsonPrinter.getDefault().toString(actual), getDefaultGoldenPath(name, "json"));
   }
 
   public static void assertWithFile(String actual, Path expectPath) throws IOException {
@@ -38,8 +51,8 @@ public enum TestUtil {
     }
     try {
       Assert.assertEquals(
-          Files.readAllLines(expectPath, Charset.defaultCharset()),
-          actual);
+          Files.readAllLines(expectPath, Charset.defaultCharset()).stream().collect(Collectors.joining(System.lineSeparator())),
+          actual.replaceAll("\\R", System.lineSeparator()));
     } catch (AssertionError e) {
       Path actualPath = expectPath.resolveSibling(expectPath.getFileName().toString() + ".actual");
       System.err.printf("Assert fail. Actual file has been created: %s\n", actualPath);
@@ -48,11 +61,12 @@ public enum TestUtil {
     }
   }
 
-  private static Path getDefaultPath(String suffix) {
+  public static Path getDefaultGoldenPath(@CheckForNull String name, @CheckForNull String suffix) {
     StackTraceElement caller = ReflectUtil.getCaller();
     return GOLDEN_PATH
         .resolve(caller.getClassName().replace('.', '\\'))
-        .resolve(suffix == null ? caller.getMethodName() : caller.getMethodName() + "." + suffix)
+        .resolve(caller.getMethodName())
+        .resolve((name == null ? "golden" : name) + (suffix == null ? "" : ("." + suffix)))
         .toAbsolutePath();
   }
 }
