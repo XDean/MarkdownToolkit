@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,21 +38,15 @@ public class MarkContentTableCreator implements MarkConstants {
       List<MarkContent> contents = reader.read(node);
       List<String> lines = createContentLinesByContent(contents);
       return insertContentTable(p, lines);
-    }))
-        .orElseThrow(() -> new IllegalArgumentException());
+    })).orElse(Collections.emptyList());
   }
 
   private List<String> createFolderContentTable(MarkNode node) throws IOException {
-    Path contentFile = node.getContentFile().orElseGet(() -> {
-      Path p = node.getPath().resolve(README_FILE);
-      uncheck(() -> Files.createFile(p));
-      return p;
-    });
     if (node.getChildren().isEmpty()) {
       return createLeafContentTable(node);
     } else {
-      List<String> lines = createContentLinesByStrcture(node);
-      return insertContentTable(contentFile, lines);
+      return node.getContentFile().map(p -> uncheck(() -> insertContentTable(p, createContentLinesByStrcture(node))))
+          .orElse(Collections.emptyList());
     }
   }
 
