@@ -19,35 +19,39 @@ public class MarkContentTableCreator implements MarkConstants {
 
   MarkContentReader reader = new MarkContentReader();
 
-  public void createContentTable(MarkNode node) throws IOException {
-    if (node.isEmpty()) {
-      return;
-    } else if (node.isLeaf()) {
-      createLeafContentTable(node);
+  public void createContentTableToFile(MarkNode node) throws IOException {
+    List<String> lines = createContentTable(node);
+    node.getContentFile().ifPresent(p -> uncheck(() -> Files.write(p, lines)));
+  }
+
+  public List<String> createContentTable(MarkNode node) throws IOException {
+    if (node.isLeaf()) {
+      return createLeafContentTable(node);
     } else {
-      createFolderContentTable(node);
+      return createFolderContentTable(node);
     }
   }
 
-  private void createLeafContentTable(MarkNode node) throws IOException {
-    node.getContentFile().ifPresent(p -> uncheck(() -> {
+  private List<String> createLeafContentTable(MarkNode node) throws IOException {
+    return node.getContentFile().map(p -> uncheck(() -> {
       List<MarkContent> contents = reader.read(node);
       List<String> lines = createContentLinesByContent(contents);
-      insertContentTable(p, lines);
-    }));
+      return insertContentTable(p, lines);
+    }))
+        .orElseThrow(() -> new IllegalArgumentException());
   }
 
-  private void createFolderContentTable(MarkNode node) throws IOException {
+  private List<String> createFolderContentTable(MarkNode node) throws IOException {
     Path contentFile = node.getContentFile().orElseGet(() -> {
       Path p = node.getPath().resolve(README_FILE);
       uncheck(() -> Files.createFile(p));
       return p;
     });
     if (node.getChildren().isEmpty()) {
-      createLeafContentTable(node);
+      return createLeafContentTable(node);
     } else {
       List<String> lines = createContentLinesByStrcture(node);
-      insertContentTable(contentFile, lines);
+      return insertContentTable(contentFile, lines);
     }
   }
 
@@ -81,7 +85,7 @@ public class MarkContentTableCreator implements MarkConstants {
     node.getChildren().forEach(n -> addContent(root, n, level + 1, lines));
   }
 
-  private void insertContentTable(Path file, List<String> contents) throws IOException {
+  private List<String> insertContentTable(Path file, List<String> contents) throws IOException {
     List<String> lines = new ArrayList<>(Files.readAllLines(file));
     String stubStr = String.format(COMMENT_PATTERN, "CONTENT");
     String startStr = String.format(COMMENT_PATTERN, "CONTENT START");
@@ -94,14 +98,16 @@ public class MarkContentTableCreator implements MarkConstants {
       lines.remove(stubIndex);
       insertIndex = stubIndex;
     } else if (startIndex != -1 && endIndex != -1) {
-      lines.removeAll(lines.subList(startIndex, endIndex + 1));
+      lines.subList(startIndex, endIndex + 1).clear();;
       insertIndex = startIndex;
-    } else if (startIndex != -1 || endIndex != -1) {
+    } else if (startIndex != -1 || endIndex != -1 || endIndex < startIndex) {
       throw new IllegalArgumentException(
-          String.format("Illegal stub comment, '%s' and '%s' should be present together", startStr, endStr));
+          String.format("Illegal stub comment, '%s' and '%s' should be present together and ordered", startStr, endStr));
     } else {
       insertIndex = 0;
     }
+    lines.add(insertIndex, "");
     lines.addAll(insertIndex, contents);
+    return lines;
   }
 }
