@@ -22,6 +22,11 @@ public class MarkPageTableCreator implements MarkConstants {
     node.getContentFile().ifPresent(p -> uncheck(() -> Files.write(p, createPageTable(node))));
   }
 
+  public void createPageTableToFileRecursively(MarkNode node) throws IOException {
+    createPageTableToFile(node);
+    node.getChildren().forEach(e -> uncheck(() -> createPageTableToFileRecursively(e)));
+  }
+
   public List<String> createPageTable(MarkNode node) throws IOException {
     Optional<Path> contentFile = node.getContentFile();
     if (contentFile.isPresent()) {
@@ -35,6 +40,9 @@ public class MarkPageTableCreator implements MarkConstants {
   private List<String> createPageTableLines(MarkNode node) {
     MarkNode left = getPrevious(node);
     MarkNode right = getNext(node);
+    if (left == null && right == null) {
+      return Collections.emptyList();
+    }
     String leftLink = getLink(node, left);
     String rightLnk = getLink(node, right);
     return Arrays.asList(String.format(PAGE_TABLE_PATTERN, leftLink, rightLnk).split("\\R"));
@@ -54,6 +62,9 @@ public class MarkPageTableCreator implements MarkConstants {
   }
 
   protected MarkNode getNext(MarkNode node) {
+    if (!node.getChildren().isEmpty()) {
+      return node.getChildren().get(0);
+    }
     MarkNode parent = node.getParent();
     if (parent == null) {
       return null;
@@ -70,7 +81,14 @@ public class MarkPageTableCreator implements MarkConstants {
     if (to == null) {
       return "";
     } else {
-      return String.format(LINK_PATTERN, to.getTitle(), from.getPath().relativize(to.getPath()));
+      if (from.isLeaf()) {
+        from = from.getParent();
+      }
+      String path = from.getPath().relativize(to.getPath()).toString();
+      if (path.isEmpty()) {
+        path = ".";
+      }
+      return String.format(LINK_PATTERN, to.getTitle(), path);
     }
   }
 

@@ -11,6 +11,9 @@ import xdean.markdown.model.MarkConstants;
 public class MarkDownUtil implements MarkConstants {
   public static List<String> insertContent(String mark, Path file, List<String> contents) throws IOException {
     List<String> lines = new ArrayList<>(Files.readAllLines(file));
+    if (contents.isEmpty()) {
+      return lines;
+    }
     String stubStr = String.format(COMMENT_PATTERN, mark);
     String startStr = String.format(COMMENT_PATTERN, mark + " START");
     String endStr = String.format(COMMENT_PATTERN, mark + " END");

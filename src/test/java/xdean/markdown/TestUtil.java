@@ -51,8 +51,9 @@ public enum TestUtil {
     }
     try {
       Assert.assertEquals(
-          Files.readAllLines(expectPath, Charset.defaultCharset()).stream().collect(Collectors.joining(System.lineSeparator())),
-          actual.replaceAll("\\R", System.lineSeparator()));
+          removeEndingEmptyLine(Files.readAllLines(expectPath, Charset.defaultCharset()).stream()
+              .collect(Collectors.joining(System.lineSeparator()))),
+          removeEndingEmptyLine(actual.replaceAll("\\R", System.lineSeparator())));
     } catch (AssertionError e) {
       Path actualPath = expectPath.resolveSibling(expectPath.getFileName().toString() + ".actual");
       System.err.printf("Assert fail. Actual file has been created: %s\n", actualPath);
@@ -68,5 +69,13 @@ public enum TestUtil {
         .resolve(caller.getMethodName())
         .resolve((name == null ? "golden" : name) + (suffix == null ? "" : ("." + suffix)))
         .toAbsolutePath();
+  }
+
+  private static String removeEndingEmptyLine(String str) {
+    String result = str;
+    while (result.endsWith(System.lineSeparator())) {
+      result = result.substring(0, result.length() - System.lineSeparator().length());
+    }
+    return result;
   }
 }

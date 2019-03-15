@@ -8,11 +8,13 @@ import java.util.Optional;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import lombok.ToString;
 
 @Data
 @Builder
+@EqualsAndHashCode(exclude = "parent")
 @ToString(exclude = "parent")
 public class MarkNode implements MarkConstants {
   MarkNode parent;
