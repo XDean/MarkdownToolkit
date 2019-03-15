@@ -86,6 +86,6 @@ public class MarkContentTableCreator implements MarkConstants {
   }
 
   private List<String> insertContentTable(Path file, List<String> contents) throws IOException {
-    return MarkDownUtil.insertContent("CONTENT", file, contents);
+    return MarkDownUtil.insertContent("CONTENT TABLE", file, contents);
   }
 }
