@@ -1,6 +1,6 @@
 package xdean.markdown.feature;
 
-import static xdean.jex.util.function.Predicates.isEquals;
+import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.reactivex.Observable;
 import xdean.jex.util.string.StringUtil;
 import xdean.markdown.handler.MarkContentReader;
 import xdean.markdown.model.MarkConstants;
@@ -21,7 +20,9 @@ public class MarkContentTableCreator implements MarkConstants {
   MarkContentReader reader = new MarkContentReader();
 
   public void createContentTable(MarkNode node) throws IOException {
-    if (node.isLeaf()) {
+    if (node.isEmpty()) {
+      return;
+    } else if (node.isLeaf()) {
       createLeafContentTable(node);
     } else {
       createFolderContentTable(node);
@@ -29,25 +30,55 @@ public class MarkContentTableCreator implements MarkConstants {
   }
 
   private void createLeafContentTable(MarkNode node) throws IOException {
-    List<MarkContent> contents = reader.read(node);
-    List<String> lines = createContentLines(contents);
-    insertContentTable(node.getPath(), lines);
+    node.getContentFile().ifPresent(p -> uncheck(() -> {
+      List<MarkContent> contents = reader.read(node);
+      List<String> lines = createContentLinesByContent(contents);
+      insertContentTable(p, lines);
+    }));
   }
 
-  private void createFolderContentTable(MarkNode node) {
-
+  private void createFolderContentTable(MarkNode node) throws IOException {
+    Path contentFile = node.getContentFile().orElseGet(() -> {
+      Path p = node.getPath().resolve(README_FILE);
+      uncheck(() -> Files.createFile(p));
+      return p;
+    });
+    if (node.getChildren().isEmpty()) {
+      createLeafContentTable(node);
+    } else {
+      List<String> lines = createContentLinesByStrcture(node);
+      insertContentTable(contentFile, lines);
+    }
   }
 
-  private List<String> createContentLines(List<MarkContent> contents) {
+  private List<String> createContentLinesByContent(List<MarkContent> contents) {
     return contents.stream()
         .map(c -> {
           if (c.getLevel() == 0) {
             return "# " + CONTENT_TABLE_TITLE;
           } else {
-            return StringUtil.repeat("  ", c.getLevel() - 1) + "- " + c.getName();
+            return StringUtil.repeat("  ", c.getLevel() - 1) + "- "
+                + String.format(LINK_PATTERN, c.getName(), titleToLink(c.getName()));
           }
         })
         .collect(Collectors.toList());
+  }
+
+  private String titleToLink(String title) {
+    return "#" + title.toLowerCase().replace(" ", "-").replace("`", "").replace("*", "");
+  }
+
+  private List<String> createContentLinesByStrcture(MarkNode node) {
+    List<String> lines = new ArrayList<>();
+    lines.add("# " + CONTENT_TABLE_TITLE);
+    node.getChildren().forEach(n -> addContent(node, n, 0, lines));
+    return lines;
+  }
+
+  private void addContent(MarkNode root, MarkNode node, int level, List<String> lines) {
+    lines.add(StringUtil.repeat("  ", level) + "- "
+        + String.format(LINK_PATTERN, node.getTitle(), root.getPath().relativize(node.getPath())));
+    node.getChildren().forEach(n -> addContent(root, n, level + 1, lines));
   }
 
   private void insertContentTable(Path file, List<String> contents) throws IOException {

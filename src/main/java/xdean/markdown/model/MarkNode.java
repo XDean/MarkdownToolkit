@@ -30,7 +30,13 @@ public class MarkNode implements MarkConstants {
   }
 
   public boolean isEmpty() {
-    return !getContentFile().isPresent();
+    if (isLeaf()) {
+      return false;
+    } else if (children.isEmpty()) {
+      return !getContentFile().isPresent();
+    } else {
+      return false;
+    }
   }
 
   public Optional<Path> getContentFile() {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ public class MarkContentReader {
     Deque<MarkContent> stack = new ArrayDeque<>();
     MarkContent root = MarkContent.builder().level(0).name("root").build();
     stack.push(root);
-    List<MarkContent> collect = Files.lines(content)
+    List<MarkContent> collect = new ArrayList<>(Files.lines(content)
         .filter(s -> s.matches("#+.*"))
         .map(s -> MarkContent.builder().level(getHashTagCount(s)).name(getTitleName(s)).build())
         .peek(c -> {
@@ -31,7 +32,8 @@ public class MarkContentReader {
           c.setParent(parent);
           stack.push(c);
         })
-        .collect(Collectors.toList());
+        .collect(Collectors.toList()));
+    collect.add(0, root);
     return collect;
   }
 
