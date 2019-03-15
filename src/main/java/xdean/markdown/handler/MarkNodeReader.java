@@ -8,11 +8,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import xdean.markdown.model.MarkConstants;
 import xdean.markdown.model.MarkNode;
 
-public class MarkNodeReader implements MarkConstants{
+public class MarkNodeReader implements MarkConstants {
 
   public MarkNode read(Path path) throws IOException {
     MarkNode node = MarkNode.builder()
@@ -21,11 +22,20 @@ public class MarkNodeReader implements MarkConstants{
         .build();
     if (Files.isDirectory(path)) {
       List<MarkNode> children = new ArrayList<>();
-      Files.newDirectoryStream(path)
+      StreamSupport.stream(Files.newDirectoryStream(path).spliterator(), false)
+          .filter(p -> {
+            if (Files.isDirectory(p)) {
+              return true;
+            }
+            String fileName = p.getFileName().toString();
+            return fileName.endsWith(".md") && !fileName.equals(README_FILE);
+          })
           .forEach(child -> {
             MarkNode childNode = uncheck(() -> read(child));
-            childNode.setParent(node);
-            children.add(childNode);
+            if (!childNode.isEmpty()) {
+              childNode.setParent(node);
+              children.add(childNode);
+            }
           });
       node.setChildren(children);
       return node;
