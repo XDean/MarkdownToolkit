@@ -1,5 +1,6 @@
 package xdean.markdown.model;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -18,4 +19,12 @@ public class MarkNode {
   String title;
 
   Path path;
+
+  public boolean isLeaf() {
+    return !Files.isDirectory(path);
+  }
+
+  public boolean isRoot() {
+    return parent == null;
+  }
 }

@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import xdean.markdown.model.MarkConstants;
 import xdean.markdown.model.MarkNode;
 
-public class MarkNodeReader {
+public class MarkNodeReader implements MarkConstants{
 
   public MarkNode read(Path path) throws IOException {
     MarkNode node = MarkNode.builder()
@@ -35,7 +36,7 @@ public class MarkNodeReader {
 
   public String getTitle(Path path) throws IOException {
     if (Files.isDirectory(path)) {
-      Path readme = path.resolve("README.md");
+      Path readme = path.resolve(README_FILE);
       if (Files.exists(readme) && !Files.isDirectory(readme)) {
         return getContentTitle(readme).orElse(path.getFileName().toString());
       } else {
