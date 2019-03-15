@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -30,6 +31,7 @@ public class MarkNodeReader implements MarkConstants {
             String fileName = p.getFileName().toString();
             return fileName.endsWith(".md") && !fileName.equals(README_FILE);
           })
+          .sorted(Comparator.comparing(p -> p.getFileName().toString()))
           .forEach(child -> {
             MarkNode childNode = uncheck(() -> read(child));
             if (!childNode.isEmpty()) {
