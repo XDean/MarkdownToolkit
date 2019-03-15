@@ -2,15 +2,18 @@ package xdean.markdown.model;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.Singular;
+import lombok.ToString;
 
 @Data
 @Builder
+@ToString(exclude = "parent")
 public class MarkNode implements MarkConstants {
   MarkNode parent;
 
@@ -20,6 +23,13 @@ public class MarkNode implements MarkConstants {
   String title;
 
   Path path;
+
+  public MarkNode(MarkNode parent, List<MarkNode> children, String title, Path path) {
+    this.parent = parent;
+    this.children = new ArrayList<>(children);
+    this.title = title;
+    this.path = path;
+  }
 
   public boolean isLeaf() {
     return !Files.isDirectory(path);

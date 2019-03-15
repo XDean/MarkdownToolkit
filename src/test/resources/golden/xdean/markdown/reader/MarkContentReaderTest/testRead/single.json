@@ -1,0 +1,86 @@
+[
+  {
+    "UID": "@0",
+    "level": 0,
+    "name": "root",
+    "parent": null,
+    "children": [
+      {
+        "UID": "@1",
+        "level": 1,
+        "name": "Title 1",
+        "parent": "@0",
+        "children": [
+          {
+            "UID": "@2",
+            "level": 2,
+            "name": "Title 1-1",
+            "parent": "@1",
+            "children": [
+              {
+                "UID": "@3",
+                "level": 3,
+                "name": "Title 1-1-1",
+                "parent": "@2",
+                "children": []
+              },
+              {
+                "UID": "@4",
+                "level": 3,
+                "name": "Title 1-1-2",
+                "parent": "@2",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "UID": "@5",
+        "level": 1,
+        "name": "Title 2",
+        "parent": "@0",
+        "children": []
+      },
+      {
+        "UID": "@6",
+        "level": 1,
+        "name": "Title 3",
+        "parent": "@0",
+        "children": [
+          {
+            "UID": "@7",
+            "level": 4,
+            "name": "Title 3-1",
+            "parent": "@6",
+            "children": []
+          },
+          {
+            "UID": "@8",
+            "level": 2,
+            "name": "Title 3-2",
+            "parent": "@6",
+            "children": [
+              {
+                "UID": "@9",
+                "level": 3,
+                "name": "Title 3-3",
+                "parent": "@8",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "@1",
+  "@2",
+  "@3",
+  "@4",
+  "@5",
+  "@6",
+  "@7",
+  "@8",
+  "@9"
+]

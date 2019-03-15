@@ -1,0 +1,35 @@
+[
+  {
+    "UID": "@0",
+    "level": 0,
+    "name": "root",
+    "parent": null,
+    "children": [
+      {
+        "UID": "@1",
+        "level": 3,
+        "name": "Title 3",
+        "parent": "@0",
+        "children": [
+          {
+            "UID": "@2",
+            "level": 4,
+            "name": "Title 4",
+            "parent": "@1",
+            "children": []
+          }
+        ]
+      },
+      {
+        "UID": "@3",
+        "level": 1,
+        "name": "Title 1",
+        "parent": "@0",
+        "children": []
+      }
+    ]
+  },
+  "@1",
+  "@2",
+  "@3"
+]
