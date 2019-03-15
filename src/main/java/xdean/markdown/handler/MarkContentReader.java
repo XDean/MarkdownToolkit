@@ -5,21 +5,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import xdean.markdown.model.MarkContent;
 import xdean.markdown.model.MarkNode;
 
 public class MarkContentReader {
-  public MarkContent read(MarkNode node) throws IOException {
+  public List<MarkContent> read(MarkNode node) throws IOException {
     Path content = node.getContentFile()
         .orElseThrow(() -> new IllegalArgumentException("The markdown node doesn't have content: " + node));
     Deque<MarkContent> stack = new ArrayDeque<>();
     MarkContent root = MarkContent.builder().level(0).name("root").build();
     stack.push(root);
-    Files.lines(content)
+    List<MarkContent> collect = Files.lines(content)
         .filter(s -> s.matches("#+.*"))
         .map(s -> MarkContent.builder().level(getHashTagCount(s)).name(getTitleName(s)).build())
-        .forEach(c -> {
+        .peek(c -> {
           MarkContent parent = stack.peek();
           while (stack.peek().getLevel() >= c.getLevel()) {
             stack.pop();
@@ -28,8 +30,9 @@ public class MarkContentReader {
           parent.getChildren().add(c);
           c.setParent(parent);
           stack.push(c);
-        });
-    return root;
+        })
+        .collect(Collectors.toList());
+    return collect;
   }
 
   private int getHashTagCount(String line) {
