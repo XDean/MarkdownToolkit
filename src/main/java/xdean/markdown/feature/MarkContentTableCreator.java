@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import xdean.jex.util.string.StringUtil;
-import xdean.markdown.handler.MarkContentReader;
 import xdean.markdown.model.MarkConstants;
 import xdean.markdown.model.MarkContent;
 import xdean.markdown.model.MarkNode;
+import xdean.markdown.reader.MarkContentReader;
 
 public class MarkContentTableCreator implements MarkConstants {
 

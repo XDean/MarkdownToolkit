@@ -1,4 +1,4 @@
-package xdean.markdown.handler;
+package xdean.markdown.reader;
 
 import static xdean.jex.util.lang.ExceptionUtil.uncheck;
 
