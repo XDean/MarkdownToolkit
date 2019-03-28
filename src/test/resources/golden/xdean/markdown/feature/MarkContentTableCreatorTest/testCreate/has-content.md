@@ -24,7 +24,6 @@ Something
     - [Title 3-3](#title-3-3)
 [](CONTENT TABLE END)
 
-
 # Title 3
 
 #### Title 3-1

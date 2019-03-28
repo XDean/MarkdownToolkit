@@ -32,8 +32,9 @@ public class MarkDownUtil implements MarkConstants {
           String.format("Illegal stub comment, '%s' and '%s' should be present together and ordered", startStr, endStr));
     } else {
       insertIndex = 0;
+      lines.add(insertIndex, "");
     }
-    lines.add(insertIndex, "");
+    // lines.add(insertIndex, "");
     lines.add(insertIndex, endStr);
     lines.addAll(insertIndex, contents);
     lines.add(insertIndex, startStr);
