@@ -34,7 +34,9 @@ public class MarkDownUtil implements MarkConstants {
       insertIndex = 0;
     }
     lines.add(insertIndex, "");
+    lines.add(insertIndex, endStr);
     lines.addAll(insertIndex, contents);
+    lines.add(insertIndex, startStr);
     return lines;
   }
 }
