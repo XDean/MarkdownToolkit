@@ -62,16 +62,13 @@ public class MarkPageTableCreator implements MarkConstants {
   }
 
   protected MarkNode getNext(MarkNode node) {
-    if (!node.getChildren().isEmpty()) {
-      return node.getChildren().get(0);
-    }
     MarkNode parent = node.getParent();
     if (parent == null) {
       return null;
     }
     int index = parent.getChildren().indexOf(node);
     if (index == parent.getChildren().size() - 1) {
-      return getNext(parent);
+      return parent;
     } else {
       return parent.getChildren().get(index + 1);
     }
@@ -88,7 +85,7 @@ public class MarkPageTableCreator implements MarkConstants {
       if (path.isEmpty()) {
         path = ".";
       }
-      return String.format(LINK_PATTERN, to.getTitle(), path);
+      return String.format(LINK_PATTERN, from == to ? BACK_TO_PARENT : to.getTitle(), path);
     }
   }
 

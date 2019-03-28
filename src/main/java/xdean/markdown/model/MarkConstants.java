@@ -9,4 +9,5 @@ public interface MarkConstants {
   String PAGE_TABLE_PATTERN = "| Previous | Next |\n" +
       "| --- | --- |\n" +
       "| %s | %s |";
+  String BACK_TO_PARENT = "Back to parent";
 }

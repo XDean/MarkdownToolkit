@@ -46,6 +46,6 @@ public class MarkPageTableCreatorTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void testWrongStub() throws Exception {
-    creator.createPageTable(nodeReader.read(getInputFile(""))).stream().collect(Collectors.joining("\n"));
+    creator.createPageTable(nodeReader.read(getInputFile("")).getChildren().get(0)).stream().collect(Collectors.joining("\n"));
   }
 }
